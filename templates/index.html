@@ -29,7 +29,7 @@
       text-align: center;
       letter-spacing: 1px;
     }
-    h4 {
+    h5 {
       color: #764ba2;
       margin-top: 25px;
       font-weight: 600;
@@ -61,23 +61,28 @@
       align-items: center;
       justify-content: flex-start;
       padding: 15px 0;
-      gap: 12px;
+      gap: 10px;
       position: relative;
-    }
-    li.list-group-item:last-child {
-      border-bottom: none;
     }
     .task-label {
       flex-grow: 1;
-      cursor: default;
+      cursor: pointer;
       font-size: 1.1rem;
-      transition: color 0.3s ease;
       user-select: none;
       margin: 0;
+      min-width: 2em;
     }
     .task-completed {
       text-decoration: line-through;
       color: gray;
+    }
+    .task-edit-input {
+      flex-grow: 1;
+      font-size: 1.1rem;
+      padding: 2px 8px;
+      margin: 0;
+      border-radius: 4px;
+      border: 1px solid #aaa;
     }
     /* Radio-like button style */
     .btn-toggle {
@@ -90,14 +95,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      user-select: none;
       transition: color 0.3s ease;
       flex-shrink: 0;
     }
     .btn-toggle:hover {
       color: #5a2a83;
     }
-
     .radio-circle {
       width: 18px;
       height: 18px;
@@ -130,59 +133,65 @@
     .btn-delete:hover {
       color: #c0392b;
     }
-    .clear-btn {
-      background: #e74c3c;
+    .clear-btn, .complete-all-btn {
       border: none;
       color: white;
-      padding: 5px 12px;
+      padding: 5px 16px;
       border-radius: 5px;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.3s ease;
       font-size: 0.85rem;
+      margin-left: 10px;
+      white-space: nowrap;
+    }
+    .clear-btn {
+      background: #e74c3c;
     }
     .clear-btn:hover {
       background: #c0392b;
     }
+    .complete-all-btn {
+      background: linear-gradient(45deg, #764ba2, #667eea);
+    }
+    .complete-all-btn:hover {
+      background: linear-gradient(45deg, #5a2a83, #5054ba);
+    }
   </style>
+
 </head>
 <body>
   <div class="container">
     <h2>Daily Task Tracker</h2>
-
     <form id="taskForm" class="d-flex gap-2 mb-4">
       <input type="text" class="form-control" placeholder="Enter new task" aria-label="Task" id="taskInput" required />
       <button type="submit" class="btn btn-primary">Add</button>
     </form>
-
-    <h4>
+    <h5>
       Active Tasks
-    </h4>
+      <button id="completeAllBtn" class="complete-all-btn" title="Mark All as Completed">Mark All</button>
+    </h5>
     <ul class="list-group" id="activeList"></ul>
-
-    <h4>
+    <h5>
       Completed Tasks
-      <button id="clearCompletedBtn" class="clear-btn" title="Clear All Completed Tasks">Clear Completed</button>
-    </h4>
+      <button id="clearCompletedBtn" class="clear-btn">Clear Completed</button>
+    </h5>
     <ul class="list-group" id="completedList"></ul>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const taskForm = document.getElementById('taskForm');
-    const taskInput = document.getElementById('taskInput');
     const activeList = document.getElementById('activeList');
     const completedList = document.getElementById('completedList');
+    const taskForm = document.getElementById('taskForm');
+    const taskInput = document.getElementById('taskInput');
     const clearCompletedBtn = document.getElementById('clearCompletedBtn');
+    const completeAllBtn = document.getElementById('completeAllBtn');
 
     taskForm.addEventListener('submit', e => {
       e.preventDefault();
-      const taskText = taskInput.value.trim();
-      if (!taskText) return;
-
-      const li = createTaskItem(taskText, false);
-      activeList.appendChild(li);
-
+      const text = taskInput.value.trim();
+      if (!text) return;
+      activeList.appendChild(createTaskItem(text, false));
       taskInput.value = '';
       taskInput.focus();
     });
@@ -191,50 +200,61 @@
       const li = document.createElement('li');
       li.className = 'list-group-item';
 
-      // Circle toggle button
       const btnToggle = document.createElement('button');
       btnToggle.className = 'btn-toggle' + (completed ? ' selected' : '');
       btnToggle.title = completed ? 'Undo' : 'Mark Completed';
 
       const radioCircle = document.createElement('span');
       radioCircle.className = 'radio-circle';
+
       const radioDot = document.createElement('span');
       radioDot.className = 'radio-dot';
 
       radioCircle.appendChild(radioDot);
       btnToggle.appendChild(radioCircle);
 
-      // Task label
       const label = document.createElement('p');
       label.className = 'task-label' + (completed ? ' task-completed' : '');
       label.textContent = text;
 
+      label.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'task-edit-input';
+        input.value = label.textContent;
+        label.replaceWith(input);
+        input.focus();
+        input.select();
+        function finishEdit() {
+          label.textContent = input.value.trim() || '(Untitled Task)';
+          input.replaceWith(label);
+        }
+        input.addEventListener('blur', finishEdit);
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter') finishEdit();
+        });
+      });
+
       btnToggle.addEventListener('click', () => {
         if (li.classList.contains('completed')) {
-          // Undo completion
           li.classList.remove('completed');
-          btnToggle.classList.remove('selected');
-          btnToggle.title = 'Mark Completed';
           label.classList.remove('task-completed');
+          btnToggle.classList.remove('selected');
           activeList.appendChild(li);
         } else {
-          // Mark completed
           li.classList.add('completed');
-          btnToggle.classList.add('selected');
-          btnToggle.title = 'Undo';
           label.classList.add('task-completed');
+          btnToggle.classList.add('selected');
           completedList.appendChild(li);
         }
       });
 
-      // Delete button
       const btnDelete = document.createElement('button');
       btnDelete.className = 'btn-delete';
       btnDelete.title = 'Delete Task';
       btnDelete.innerHTML = '&times;';
       btnDelete.addEventListener('click', () => li.remove());
 
-      // Arrange elements in li: toggle button, label, delete button
       li.appendChild(btnToggle);
       li.appendChild(label);
       li.appendChild(btnDelete);
@@ -243,9 +263,19 @@
     }
 
     clearCompletedBtn.addEventListener('click', () => {
-      while (completedList.firstChild) {
-        completedList.removeChild(completedList.firstChild);
-      }
+      completedList.innerHTML = '';
+    });
+
+    completeAllBtn.addEventListener('click', () => {
+      const tasks = [...activeList.children];
+      tasks.forEach(li => {
+        li.classList.add('completed');
+        const label = li.querySelector('.task-label');
+        const btnToggle = li.querySelector('.btn-toggle');
+        label.classList.add('task-completed');
+        btnToggle.classList.add('selected');
+        completedList.appendChild(li);
+      });
     });
   </script>
 </body>
