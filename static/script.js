@@ -1,4 +1,4 @@
-const activeList = document.getElementById('activeList');
+    const activeList = document.getElementById('activeList');
     const completedList = document.getElementById('completedList');
     const taskForm = document.getElementById('taskForm');
     const taskInput = document.getElementById('taskInput');
