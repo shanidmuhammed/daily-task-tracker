@@ -117,6 +117,24 @@
       refreshTasks();
     });
 
+    completeAllBtn.addEventListener('click', async () => {
+    const response = await fetch('/tasks');
+    const tasks = await response.json();
+    
+    // Loop through all active (incomplete) tasks
+    for (const task of tasks) {
+      if (!task.completed) {
+        await fetch(`/tasks/${task.id}`, {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({completed: true})
+        });
+      }
+    }
+
+      refreshTasks();
+    });
+
     // Load tasks on page load
     refreshTasks();
   </script>
