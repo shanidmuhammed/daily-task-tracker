@@ -33,7 +33,11 @@ pip install -r requirements.txt
 5. Then browse to `http://localhost:5000`
 
 ## Hosting Platform
-The app is hosted on Render.com, a cloud platform that supports Python web applications and SQLite databases. Ensuring smooth and hassle-free operation of the application in a production environment.
+The app is hosted on Render.com, a cloud platform that supports Python web applications and SQLite databases. Ensuring smooth and hassle-free operation of the application in a production environment.The live application is accessible at:
+`https://daily-task-tracker-ef7w.onrender.com/`
+
+## About Database File
+The SQLite database file (`tasks.db`) is **not included** in the repository and should **not be pushed to GitHub**, as it is environment-specific and unsuitable for version control. The database schema is created automatically when running the app. For collaboration, only the code and schema creation scripts are shared, while the database file is generated locally.
 
 ## Difficulties Faced
 - The dynamic SPA behavior with proper API calls for database synchronization.

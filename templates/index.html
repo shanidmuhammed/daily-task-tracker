@@ -4,26 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Daily Task Tracker</title>
+    <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Custom stylesheet -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
   <div class="container position-relative">
+     <!-- Dark mode toggle button -->
     <button id="darkModeBtn" class="dark-mode-btn" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">
       <svg height="24" width="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
         <path d="M21 12.79A9 9 0 0111.21 3a7 7 0 100 14A9 9 0 0021 12.79z"/>
       </svg>
     </button>
 
+      <!-- Title -->
     <h2>Daily Task Tracker</h2>
+    <!-- Task input form -->
     <form id="taskForm" class="d-flex gap-2 mb-4">
       <input type="text" id="taskInput" class="form-control" placeholder="Enter new task" autocomplete="off" required />
       <button type="submit" class="btn btn-primary">Add</button>
     </form>
+     <!-- Active tasks with 'Mark All' button -->
     <h5>Active Tasks
       <button id="completeAllBtn" class="complete-all-btn" title="Mark All as Completed">Mark All</button>
     </h5>
     <ul class="list-group" id="activeList"></ul>
+     <!-- Completed tasks with 'Clear Completed' button -->
     <h5>
       Completed Tasks
       <button id="clearCompletedBtn" class="clear-btn">Clear Completed</button>
@@ -31,6 +38,7 @@
     <ul class="list-group" id="completedList"></ul>
   </div>
 
+   <!-- Link to main JavaScript file -->
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
